@@ -72,6 +72,6 @@ if submitted:
 
     # Nhúng link bói bên ngoài (ví dụ link tructiep.xyz hoặc horo.vn)
     st.markdown(f"""
-    👉 [Xem chi tiết vận mệnh {sign} hôm nay tại đây](https://www.phunuvagiadinh.vn/tu-vi-111/{sign.lower().replace(" ", "-")}-hom-nay-391)
+    👉 [Xem chi tiết vận mệnh {sign} hôm nay tại đây](https://tracuuthansohoc.com/boi-tinh-yeu-theo-cung/{sign.lower().replace(" ", "-")}-hom-nay-391)
     """, unsafe_allow_html=True)
 
