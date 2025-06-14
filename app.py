@@ -1,100 +1,81 @@
 import streamlit as st
 
-# Khởi tạo session_state
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
-if 'accounts' not in st.session_state:
-    st.session_state.accounts = {"admin": "123456"}
+# Khởi tạo dữ liệu
+if 'real_estates' not in st.session_state:
+    st.session_state.real_estates = []
 
-# CSS luxury cho toàn bộ app và form login animation
+# CSS luxury
 def load_css():
     st.markdown("""
     <style>
     body {
-        background-image: url("https://images.alphacoders.com/133/1334020.jpeg");
-        background-size: cover;
-        background-attachment: fixed;
+        background-color: #1e1e2f;
         color: white;
     }
     h1, h2 {
         text-align: center;
         color: #f39c12;
         font-family: 'Segoe UI', sans-serif;
-        text-shadow: 0 0 10px #f39c12, 0 0 20px #f39c12;
+        text-shadow: 0 0 8px #f39c12;
     }
-    .login-box {
+    .box {
         background: rgba(44, 62, 80, 0.9);
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 0 30px #f39c12;
-        width: 400px;
-        margin: 50px auto;
-        animation: fadeIn 1.5s ease;
-    }
-    input {
-        width: 100%;
-        padding: 12px;
-        margin: 15px 0;
-        border-radius: 8px;
-        border: none;
-        background: #2c3e50;
-        color: #f1c40f;
-        font-size: 16px;
-        box-shadow: inset 0 0 5px #000;
-        transition: 0.3s;
-    }
-    input:focus {
-        outline: none;
-        background: #34495e;
-        box-shadow: 0 0 10px #f39c12;
-    }
-    button {
-        background: linear-gradient(45deg, #f39c12, #e67e22);
-        color: white;
-        padding: 12px;
-        border: none;
-        border-radius: 10px;
-        width: 100%;
-        cursor: pointer;
-        font-size: 16px;
-        transition: 0.4s;
-        box-shadow: 0 0 10px #f39c12;
-    }
-    button:hover {
-        background: linear-gradient(45deg, #e67e22, #d35400);
-        box-shadow: 0 0 20px #f39c12;
-    }
-    @keyframes fadeIn {
-        from {opacity: 0; transform: translateY(-30px);}
-        to {opacity: 1; transform: translateY(0);}
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.7);
     }
     </style>
     """, unsafe_allow_html=True)
 
 load_css()
 
-# Sidebar Menu
-menu = st.sidebar.selectbox("📚 Menu", ["Đăng nhập Luxury", "📖 Trang Truyện"])
+st.markdown("<h1>🏘️ Quản Lý Bất Động Sản</h1>", unsafe_allow_html=True)
 
-# Luxury Login
-if menu == "Đăng nhập Luxury":
-    st.markdown("<div class='login-box'><h2>✨ Đăng nhập Huyền Thoại</h2>", unsafe_allow_html=True)
-    username = st.text_input("", placeholder="🧑 Username")
-    password = st.text_input("", placeholder="🔒 Password", type="password")
-    if st.button("🔥 Login Now"):
-        if username in st.session_state.accounts and st.session_state.accounts[username] == password:
-            st.session_state.logged_in = True
-            st.success("🎉 Đăng nhập thành công!")
-        else:
-            st.error("Sai tài khoản hoặc mật khẩu!")
+menu = st.sidebar.selectbox("📂 Menu", ["📥 Thêm Mới", "📑 Danh Sách", "🔍 Tìm Kiếm"])
+
+# Thêm bất động sản
+if menu == "📥 Thêm Mới":
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
+    st.subheader("📌 Nhập thông tin BĐS")
+
+    name = st.text_input("Tên BĐS")
+    location = st.text_input("Vị trí")
+    price = st.number_input("Giá (triệu VND)", min_value=0)
+    property_type = st.selectbox("Loại", ["Căn hộ", "Nhà phố", "Đất nền", "Biệt thự"])
+
+    if st.button("📥 Thêm vào danh sách"):
+        new_estate = {"name": name, "location": location, "price": price, "type": property_type}
+        st.session_state.real_estates.append(new_estate)
+        st.success("✅ Đã thêm bất động sản!")
+
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Trang Truyện
-elif menu == "📖 Trang Truyện":
-    if st.session_state.logged_in:
-        st.markdown("<h1>🐉 Dragon Ball Z - Huyền thoại Ngọc Rồng</h1>", unsafe_allow_html=True)
-        st.image("https://images6.alphacoders.com/134/1340092.jpeg")
-        st.write("**Nội dung:** Truyện Son Goku, 7 viên ngọc rồng và hành trình chiến đấu bảo vệ Trái Đất.")
+# Hiển thị danh sách
+elif menu == "📑 Danh Sách":
+    st.subheader("📑 Danh sách BĐS đã thêm")
+    if st.session_state.real_estates:
+        for i, estate in enumerate(st.session_state.real_estates):
+            with st.expander(f"{estate['name']} ({estate['type']})"):
+                st.write(f"**Vị trí:** {estate['location']}")
+                st.write(f"**Giá:** {estate['price']} triệu VND")
+                st.write(f"**Loại:** {estate['type']}")
+                if st.button(f"🗑️ Xóa BĐS thứ {i+1}", key=f"delete_{i}"):
+                    st.session_state.real_estates.pop(i)
+                    st.experimental_rerun()
     else:
-        st.warning("⚠️ Bạn cần đăng nhập để vào xem truyện.")
+        st.warning("Chưa có dữ liệu!")
+
+# Tìm kiếm
+elif menu == "🔍 Tìm Kiếm":
+    keyword = st.text_input("🔎 Nhập tên hoặc loại BĐS cần tìm")
+    if keyword:
+        results = [e for e in st.session_state.real_estates if keyword.lower() in e['name'].lower() or keyword.lower() in e['type'].lower()]
+        if results:
+            for estate in results:
+                st.markdown(f"**📍 {estate['name']} ({estate['type']})**")
+                st.write(f"- Vị trí: {estate['location']}")
+                st.write(f"- Giá: {estate['price']} triệu VND")
+        else:
+            st.error("Không tìm thấy BĐS nào!")
 
