@@ -1,25 +1,37 @@
 import streamlit as st
 
-# Khởi tạo biến session nếu chưa có
+# Khởi tạo session_state
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'accounts' not in st.session_state:
     st.session_state.accounts = {"admin": "123456"}
 
-# Hàm load CSS nội bộ
+# CSS toàn app + background
 def load_css():
     st.markdown("""
     <style>
-    body {background-color: #1e1e2f; color: white;}
-    h1, h2, h3 {text-align: center; color: #f39c12;}
+    /* Toàn bộ body */
+    body {
+        background-image: url("https://images6.alphacoders.com/133/1334020.jpeg");
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    h1, h2, h3 {
+        text-align: center;
+        color: #f39c12;
+    }
+
     .box {
-        background-color: #2c3e50;
+        background-color: rgba(44, 62, 80, 0.9);
         padding: 20px;
         border-radius: 15px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        box-shadow: 0 0 15px rgba(0,0,0,0.7);
         width: 400px;
         margin: auto;
     }
+
     input, button {
         width: 100%;
         padding: 10px;
@@ -27,55 +39,94 @@ def load_css():
         border-radius: 5px;
         border: none;
     }
+
     button {
         background-color: #f39c12;
         color: white;
         cursor: pointer;
     }
-    button:hover {background-color: #e67e22;}
+
+    button:hover {
+        background-color: #e67e22;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 load_css()
 
-# Chuyển trang bằng selectbox hoặc st.session_state
-menu = st.sidebar.selectbox("Menu", ["Login", "Register", "Trang Truyện"])
+# Sidebar Menu
+menu = st.sidebar.selectbox("📚 Menu", ["Đăng nhập", "Đăng ký", "📖 Trang Truyện"])
 
-if menu == "Register":
+# Đăng ký tài khoản
+if menu == "Đăng ký":
     st.markdown("<div class='box'><h2>Đăng ký tài khoản</h2>", unsafe_allow_html=True)
     new_user = st.text_input("Nhập Username")
     new_pass = st.text_input("Nhập Password", type="password")
     if st.button("Đăng ký"):
         if new_user in st.session_state.accounts:
-            st.error("Username đã tồn tại!")
+            st.error("⚠️ Username đã tồn tại!")
         else:
             st.session_state.accounts[new_user] = new_pass
-            st.success("Đăng ký thành công! Mời bạn đăng nhập.")
+            st.success("🎉 Đăng ký thành công! Vui lòng đăng nhập.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-elif menu == "Login":
+# Đăng nhập
+elif menu == "Đăng nhập":
     st.markdown("<div class='box'><h2>Đăng nhập</h2>", unsafe_allow_html=True)
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     if st.button("Login"):
         if username in st.session_state.accounts and st.session_state.accounts[username] == password:
             st.session_state.logged_in = True
-            st.success("Đăng nhập thành công! Chuyển sang trang truyện...")
+            st.success("🎉 Đăng nhập thành công!")
         else:
             st.error("Sai tài khoản hoặc mật khẩu!")
     st.markdown("</div>", unsafe_allow_html=True)
 
-elif menu == "Trang Truyện":
+# Trang Truyện
+elif menu == "📖 Trang Truyện":
     if st.session_state.logged_in:
-        st.markdown("<h1>Dragon Ball Z 🐉🔥</h1>", unsafe_allow_html=True)
-        st.image("https://cdn.tuoitre.vn/thumb_w/730/471584752817336320/2023/9/1/photo1693542433542-16935424336421957455629.jpg")
+        st.markdown("""
+            <style>
+            .truyen {
+                background-color: rgba(0,0,0,0.7);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px auto;
+                max-width: 900px;
+            }
+            .gallery img {
+                width: 100%;
+                margin-bottom: 20px;
+                border-radius: 10px;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<h1>🐉 Dragon Ball Z - Huyền thoại Ngọc Rồng</h1>", unsafe_allow_html=True)
+        st.markdown("<div class='truyen'>", unsafe_allow_html=True)
+
         st.write("""
-        **Nội dung:**  
-        Truyện kể về cậu bé Son Goku từ nhỏ đến lớn, chinh phục các đối thủ, bảo vệ Trái Đất và khám phá 7 viên ngọc rồng thần kỳ.
+        **Tóm tắt:**  
+        Cậu bé Son Goku phiêu lưu khắp nơi tìm kiếm 7 viên ngọc rồng, kết bạn và chiến đấu chống lại kẻ ác để bảo vệ Trái Đất.
 
         **Tác giả:** Akira Toriyama  
-        **Thể loại:** Hành động, Viễn tưởng, Phiêu lưu, Hài hước
+        **Thể loại:** Hành động, Phiêu lưu, Hài hước, Viễn tưởng
         """)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<h2>📸 Hình ảnh truyện</h2>", unsafe_allow_html=True)
+        # Gallery ảnh
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.image("https://images3.alphacoders.com/132/1328471.jpeg")
+            st.image("https://images6.alphacoders.com/134/1340092.jpeg")
+        with col2:
+            st.image("https://images6.alphacoders.com/132/1328356.jpeg")
+            st.image("https://images.alphacoders.com/134/1340085.jpeg")
+
     else:
-        st.warning("Vui lòng đăng nhập để đọc truyện.")
+        st.warning("⚠️ Bạn cần đăng nhập để vào xem truyện!")
 
